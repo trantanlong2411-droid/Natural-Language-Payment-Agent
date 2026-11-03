@@ -23,7 +23,8 @@ This is the permanent proof index for the Pharos Medium / Payments task. Review 
 
 - [Public app](https://natural-language-payment-agent.trantanlong2411.workers.dev/)
 - [Reviewer walkthrough](https://natural-language-payment-agent.trantanlong2411.workers.dev/proof)
-- [GitHub Actions workflow](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml)
+- [Automatic Mainnet RPC and unit/build workflow](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml)
+- [Separate post-deployment Worker integration workflow](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify-deployed.yml)
 - [Live verification source](../scripts/smoke-deployed.mjs)
 - [Parser and intent clarification](../src/parser.mjs)
 - [On-chain validator and unsigned transaction builder](../src/engine.mjs)
