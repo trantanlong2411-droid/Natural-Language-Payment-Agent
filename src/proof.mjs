@@ -48,16 +48,25 @@ a.cta{display:inline-block;background:#b1c7ff;border-radius:9px;padding:11px 19p
 <div class="card"><strong>REAL ON-CHAIN PRECHECK</strong><h3>Block 22023943</h3><p>Public third-party sender held 1,340,000 USDC with estimated gas reserve 0.00070344 PROS at that time.</p></div>
 </div>
 <p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41664769111/job/126017017877" target="_blank" rel="noopener noreferrer">Actual RPC engine verification log ↗</a> · <a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/blob/main/proof/verified-engine-mainnet.json" target="_blank" rel="noopener noreferrer">Compact proof JSON ↗</a></p>
-<p class="small">The user and project do not control this public sender; prepared JSON is not a signed transaction or authorization. The initial expected Cloudflare workers.dev URL returned 404; this direct RPC proof alone does not establish website deployment.</p>
+<p class="small">The user and project do not control this public sender; prepared JSON is not a signed transaction or authorization. In addition to this original direct-RPC evidence, the separate deployed Cloudflare Worker verification has now passed end-to-end (see the next section).</p>
 </section>
-<section class="panel"><h2>03 / Live and reproducible proof</h2>
+<section class="panel"><h2>03 / Production Worker fully verified</h2>
+<p>GitHub Actions connected directly to the published Worker on 3 November 2026 and executed the complete flow: recognize missing <code>alice.eth</code> recipient and sender, reject an unfunded request, enforce explicit confirmation, and generate an unsigned 100-USDC ERC-20 transaction from a freshly checked public account. This was a positive real-blockchain end-to-end test, not a mock run.</p>
+<div class="grid">
+<div class="card"><strong>100 USDC · UNSIGNED</strong><h3>Selector 0xa9059cbb</h3><p>Recipient <code>0x2222222222222222222222222222222222222222</code> · Signed: false · Broadcast: false</p></div>
+<div class="card"><strong>PHAROS MAINNET · BLOCK 22025409</strong><h3>1,239.162369 USDC</h3><p>Public sample sender <code>0x08cd62babd8Dac7404504792Df30C12fC5384Df5</code> · Gas reserve 0.00070344 PROS</p></div>
+</div>
+<p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41668698116" target="_blank" rel="noopener noreferrer">Passing deployed Worker integration logs ↗</a> · <a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/blob/main/proof/verified-deployed-worker.json" target="_blank" rel="noopener noreferrer">Permanent deployed proof metadata ↗</a></p>
+<p class="small">This is a historical observation of a third-party EOA, not the user's funds. The project never signed or sent the transaction. Values and gas can change after this test.</p>
+</section>
+<section class="panel"><h2>04 / Additional tests and reproducibility</h2>
 <p>Automated tests verify parser ambiguity, address/token validation, balance and gas failures, review gating and the exact unsigned transaction structure. The deployed live GitHub Actions workflow checks actual Pharos RPC connectivity and USDC contract metadata using the published Cloudflare Worker.</p>
 <p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml" target="_blank" rel="noopener noreferrer">GitHub Actions verification →</a></p>
 <p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/blob/main/proof/README.md" target="_blank" rel="noopener noreferrer">Permanent source-backed proof →</a></p>
 <p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent" target="_blank" rel="noopener noreferrer">Public source repository →</a></p>
 <p class="small">A successful test shows the capabilities at its recorded time. A zero-balance address cannot be represented as funded. A static example never proves current spendability, gas prices or user ownership.</p>
 </section>
-<section class="panel"><h2>04 / Source and limitations</h2>
+<section class="panel"><h2>05 / Source and limitations</h2>
 <p><a href="https://docs.pharos.xyz/getting-started/network" target="_blank" rel="noopener noreferrer">Pharos official network docs →</a></p>
 <p><a href="https://www.circle.com/blog/now-available-usdc-cctp-on-pharos" target="_blank" rel="noopener noreferrer">Circle official Pharos USDC contract →</a></p>
 <p><a href="https://eips.ethereum.org/EIPS/eip-20" target="_blank" rel="noopener noreferrer">ERC-20 token ABI specification →</a></p>
