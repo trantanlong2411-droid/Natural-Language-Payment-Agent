@@ -3,14 +3,21 @@ import {Interface,id,getAddress,formatUnits,parseUnits} from 'ethers';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {CHAIN,ERC20,reviewPayment,prepareUnsigned} from '../src/engine.mjs';
 let requestId=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const rpc=async(method,params=[])=>{
- const res=await fetch(CHAIN.rpc,{method:'POST',headers:{'content-type':'application/json'},
-  body:JSON.stringify({jsonrpc:'2.0',id:++requestId,method,params}),signal:AbortSignal.timeout(15000)});
- if(!res.ok)throw Error('RPC HTTP '+res.status);
- const v=await res.json();
- if(v.error)throw Error(method+': '+v.error.message);
- if(v.result===undefined||v.result===null)throw Error(method+' returned no result');
- return v.result;
+ let last;
+ for(let attempt=0;attempt<6;attempt++){
+  try{
+   const res=await fetch(CHAIN.rpc,{method:'POST',headers:{'content-type':'application/json'},
+    body:JSON.stringify({jsonrpc:'2.0',id:++requestId,method,params}),signal:AbortSignal.timeout(15000)});
+   if(!res.ok)throw Error('RPC HTTP '+res.status);
+   const v=await res.json();
+   if(v.error)throw Error(method+': '+v.error.message);
+   if(v.result===undefined||v.result===null)throw Error(method+' returned no result');
+   return v.result;
+  }catch(e){last=e;if(attempt<5)await sleep(750*(attempt+1));}
+ }
+ throw Error(String(last?.message||last||'RPC unavailable').slice(0,220));
 };
 const call=async(method,args=[])=>{
  const data=ERC20.encodeFunctionData(method,args);
@@ -32,8 +39,22 @@ const report={schema:'pharos-natural-payment-real-rpc-contract-audit-v1',
  noSigning:true,noBroadcast:true,candidate:null,scan:{windows:0,candidatesChecked:0,errors:[]}};
 console.log('OFFICIAL_CIRCLE_USDC_ONCHAIN_VERIFIED',JSON.stringify({chainId:1672,block:tip.toString(),
  contract:CHAIN.usdc,symbol:String(symbol),decimals:Number(decimals)}));
+const preferred='0x086eb9C2B14dD657ae77D07dF9115A2F946CE327';
+try{
+ const [code,native,bal]=await Promise.all([
+  rpc('eth_getCode',[preferred,'latest']),
+  rpc('eth_getBalance',[preferred,'latest']),
+  call('balanceOf',[preferred])
+ ]);
+ if(code==='0x'&&BigInt(native)>=1000000000000000n&&BigInt(bal)>=100000000n){
+  report.candidate={address:preferred,usdcRaw:BigInt(bal).toString(),
+   usdcBalance:formatUnits(bal,6),prosBalance:formatUnits(native,18),
+   verifiedEOA:true,verifiedAtUtc:new Date().toISOString(),
+   source:'Rechecked public EOA discovered in earlier verified on-chain Transfer scan'};
+ }
+}catch(e){report.scan.errors.push('Preferred EOA unavailable: '+String(e.message||e).slice(0,90));}
 const seen=new Set(),min=100000000n,topic=id('Transfer(address,address,uint256)');
-outer:for(let i=0;i<18;i++){
+outer:for(let i=0;!report.candidate&&i<10;i++){
  const high=tip-BigInt(i*900),low=high>899n?high-899n:0n;
  let logs;
  try{logs=await rpc('eth_getLogs',[{address:CHAIN.usdc,
@@ -46,7 +67,7 @@ outer:for(let i=0;i<18;i++){
   const who=getAddress('0x'+entry.topics[2].slice(-40));
   if(seen.has(who.toLowerCase()))continue;
   seen.add(who.toLowerCase());
-  if(report.scan.candidatesChecked++>70)break outer;
+  if(report.scan.candidatesChecked++>35)break outer;
   try{
    const [contractCode,native,tokenBal]=await Promise.all([
     rpc('eth_getCode',[who,'latest']),
