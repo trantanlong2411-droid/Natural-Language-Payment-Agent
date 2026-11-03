@@ -1,5 +1,19 @@
 # Natural-Language Payment Agent — reviewer evidence
 
+## Fully verified deployed Cloudflare Worker proof (3 November 2026)
+
+The live GitHub Actions test connected to **the actual deployed Cloudflare Worker**, not merely an offline engine or mocked API. It verified **all four challenge requirements**: exact parsing and clarification, real ERC-20 token and balance checks, human-readable review before confirmation, and creation of a **100 USDC unsigned** transaction without signature or broadcast.
+
+- [Successful deployed end-to-end GitHub Actions run](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41668698116)
+- [Compact independently verified deployed proof JSON](./verified-deployed-worker.json)
+- Full raw API JSON in the `pharos-natural-language-payment-live-proof` workflow artifact (30-day retention)
+- Pharos Mainnet block **22025409**, verified public third-party sender `0x08cd62babd8Dac7404504792Df30C12fC5384Df5`
+- On-chain balance at that block: **1,239.162369 USDC**; gas reserve: **0.00070344 PROS**; nonce: **3933**
+- Confirmed ERC-20 selector `0xa9059cbb`, recipient `0x2222222222222222222222222222222222222222`, amount **100 USDC**
+- No signed payload, no on-chain transfer, no tx hash, and no claim to control the public sender account
+
+The endpoint correctly required a follow-up for `send 100 USDC to alice.eth`, blocked an unfunded example, blocked unconfirmed preparation, and allowed an unsigned draft after explicit review of a sufficiently funded public example. These are historical observations: do not represent them as current account balances.
+
 ## Verified real Mainnet unsigned payment (3 November 2026)
 
 The independent direct-RPC GitHub Actions job successfully used the **live Pharos Pacific Mainnet** (chain ID 1672) to verify an actual public account's USDC and PROS balances, validate the official Circle USDC contract, read current gas and nonce, and generate an **unsigned 100 USDC ERC-20 transfer**. It decoded the resulting calldata and verified the recipient and amount without signing or broadcasting.
