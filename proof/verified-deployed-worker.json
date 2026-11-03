@@ -1,0 +1,44 @@
+{
+  "schema": "pharos-natural-payment-deployed-live-verification-v1",
+  "recordedAtUtc": "2026-11-03T15:55:01.693Z",
+  "runUrl": "https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41668698116",
+  "artifactName": "pharos-natural-language-payment-live-proof",
+  "artifactId": 13247805261,
+  "source": "successful GitHub Actions test calling actual deployed Cloudflare Worker",
+  "chainId": 1672,
+  "chain": "Pharos Pacific Mainnet",
+  "verifiedBlock": "22025409",
+  "supportedTaskCriteria": {
+    "parsingAndFollowup": true,
+    "validatedERC20ContractAndBalances": true,
+    "summaryBeforeConstruction": true,
+    "unsignedOnly": true
+  },
+  "endpointChecks": {
+    "healthEndpointReached": true,
+    "clarificationForAliceEthAndMissingSender": true,
+    "unsupportedOrUnfundedPaymentBlocked": true,
+    "unconfirmedDraftBlocked": true,
+    "fundedThirdPartyPositiveDraft": true
+  },
+  "fundedExample": {
+    "sender": "0x08cd62babd8Dac7404504792Df30C12fC5384Df5",
+    "recipient": "0x2222222222222222222222222222222222222222",
+    "symbol": "USDC",
+    "amount": "100",
+    "senderBalanceAtRead": "1239.162369 USDC",
+    "observedGasReserve": "0.00070344 PROS",
+    "pendingNonceAtRead": "3933",
+    "calldataSelector": "0xa9059cbb",
+    "controlledByProject": false
+  },
+  "signed": false,
+  "broadcast": false,
+  "transactionHash": null,
+  "caveats": [
+    "Historical result as of Nov 3, 2026: balance, gas, nonce can change.",
+    "Sender and recipient are public example addresses; project never controls the sender.",
+    "The app only produced an unsigned transaction; it did not sign, approve, or broadcast funds.",
+    "The full actual Worker JSON is in GitHub Actions artifact; this is compact metadata copied from verified CI logs."
+  ]
+}
