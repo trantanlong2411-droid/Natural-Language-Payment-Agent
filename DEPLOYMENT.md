@@ -1,5 +1,8 @@
 # Cloudflare Worker deployment — repository already prepared
 
+> **Update — deployed website verified on 3 November 2026.** [GitHub Actions run 41668698116](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41668698116) reached the production Worker and prepared a real-source unsigned 100-USDC draft. The HTTP 404 issue described below is historical troubleshooting guidance, not the current deployment status.
+
+
 The GitHub repository code, `wrangler.jsonc`, `package.json`, unit tests, and CI are ready. An on-chain integration test **cannot pass** until the production Worker is deployed and responds to `GET /api/health` with the exact build version.
 
 ## Observed blocker (3 Nov 2026)
