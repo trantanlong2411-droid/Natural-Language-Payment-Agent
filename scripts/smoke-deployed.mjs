@@ -28,9 +28,28 @@ const to='0x2222222222222222222222222222222222222222';
 const instruction='send 100 USDC to '+to;
 const knownZero={text:instruction,sender:from};
 async function discoverSender(min=100000000n){
+ // Prefer two previously verified public EOA examples, rechecked through the deployed
+ // Worker. If balances changed, fall back to discovering candidates from chain logs.
+ const preferred=[
+  '0x086eb9C2B14dD657ae77D07dF9115A2F946CE327',
+  '0x08cd62babd8Dac7404504792Df30C12fC5384Df5'
+ ];
+ let preferredChecked=0;
+ for(const sender of preferred){
+  try{
+   preferredChecked++;
+   const r=await endpoint('/api/review',{text:instruction,sender});
+   if(r.status===200&&r.data.ok===true&&r.data.readyForSignature===true
+      &&r.data.review?.chainId===1672&&BigInt(r.data.review.balanceRaw)>=min){
+    return {sender,source:'Previously verified public Pharos EOA, freshly revalidated by deployed Worker',
+      usdcRaw:r.data.review.balanceRaw,checked:preferredChecked,windows:0};
+   }
+   console.log('PUBLIC_SAMPLE_NOT_READY',sender,r.data.review?.status||r.data.error||'unknown');
+  }catch(e){console.log('PUBLIC_SAMPLE_RPC_UNAVAILABLE',sender,String(e.message||e).slice(0,120))}
+ }
  const tip=BigInt(await rpc('eth_blockNumber',[])),topic=id('Transfer(address,address,uint256)');
  const visited=new Set();let checked=0,windows=0;
- for(let i=0;i<22;i++){
+ for(let i=0;i<8;i++){
   const high=tip-BigInt(i*950),low=high>949n?high-949n:0n;
   let logs;
   try{logs=await rpc('eth_getLogs',[{
@@ -44,7 +63,7 @@ async function discoverSender(min=100000000n){
    const who=getAddress('0x'+event.topics[2].slice(-40));
    if(visited.has(who.toLowerCase())||who.toLowerCase()===to.toLowerCase())continue;
    visited.add(who.toLowerCase());
-   if(++checked>90)return {sender:null,windows,checked};
+   if(++checked>35)return {sender:null,windows,checked,preferredChecked};
    try{
     const [code,bal,gas]=await Promise.all([
      rpc('eth_getCode',[who,'latest']),
@@ -54,11 +73,11 @@ async function discoverSender(min=100000000n){
     if(code!=='0x'||BigInt(gas||'0x0')<1000000000000000n)continue;
     const [usdc]=ERC20.decodeFunctionResult('balanceOf',bal);
     if(usdc>=min)return {sender:who,usdcRaw:usdc.toString(),
-     gasWei:String(BigInt(gas)),windows,checked,fromTx:event.transactionHash};
+     gasWei:String(BigInt(gas)),windows,checked,preferredChecked,fromTx:event.transactionHash};
    }catch(e){console.log('CANDIDATE_UNAVAILABLE',who,String(e.message).slice(0,60))}
   }
  }
- return {sender:null,windows,checked};
+ return {sender:null,windows,checked,preferredChecked};
 }
 assert.equal(CHAIN.id,1672);
 const all={schema:'pharos-natural-payment-live-proof-v1',website:base,
@@ -133,6 +152,8 @@ if(all.discoveredPublicSender.sender){
 }else{
  console.log('NO_LIVE_FUNDED_EOA_FOUND','Not fabricating a funded sender or a signed transaction.');
 }
+assert.ok(all.unsignedDraft,
+ 'Deployed end-to-end test did not verify a positive 100 USDC unsigned transaction; do not claim live demo is complete.');
 all.finishedAtUtc=new Date().toISOString();
 await mkdir('proof',{recursive:true});
 await writeFile('proof/live-payment-evidence.json',JSON.stringify(all,null,2)+'\n');
