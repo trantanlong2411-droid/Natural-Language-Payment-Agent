@@ -48,8 +48,9 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
 <input id="sender" placeholder="0x... public Pharos address" spellcheck="false">
 <label for="recipient">Verified recipient address · optional when already in instruction</label>
 <input id="recipient" placeholder="0x... (resolve alice.eth manually)" spellcheck="false">
-<div class="actions"><button id="parse">Parse my instruction</button><button id="review" class="secondary">Validate on Pharos Mainnet</button></div>
+<div class="actions"><button id="parse">Parse my instruction</button><button id="review" class="secondary">Validate on Pharos Mainnet</button><button id="sample" class="secondary">Load verified public example</button></div>
 <p id="message" class="status" role="status">Start by parsing a payment. You can complete an unresolved recipient or sender after the agent asks.</p>
+<p class="small">Public demo sender (verified 2026-11-03 at Pharos block 22023746): <code>0x08cd62babd8Dac7404504792Df30C12fC5384Df5</code>, previously holding 1,940.189315 USDC and 18.15256 PROS. This third-party wallet is NOT yours and cannot be signed for by this app. Balances are checked again live.</p>
 <details><summary>Parsed intent or missing fields</summary><pre id="parsed">No input parsed yet.</pre></details>
 </section>
 <section id="reviewPanel" class="panel">
@@ -180,6 +181,13 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
  }
  $('parse').onclick=parse;$('review').onclick=review;$('prepare').onclick=prepare;
+ $('sample').onclick=()=>{
+  $('instruction').value='send 100 USDC to 0x2222222222222222222222222222222222222222';
+  $('sender').value='0x08cd62babd8Dac7404504792Df30C12fC5384Df5';
+  $('recipient').value='';
+  reset();setStatus('Public third-party funded address loaded. Reviewing actual current balances. No wallet control is implied.');
+  review();
+ };
  $('confirmed').onchange=()=>{$('prepare').disabled=!latestReview?.readyForSignature||!$('confirmed').checked};
  $('copy').onclick=()=>{if(latestPrepared)navigator.clipboard.writeText(JSON.stringify(latestPrepared.unsignedTransaction,null,2)).catch(()=>{})};
  $('export').onclick=exportJSON;
