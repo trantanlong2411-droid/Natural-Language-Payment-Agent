@@ -15,7 +15,7 @@ label{display:block;font-size:12px;color:#b7caec;margin:13px 0 6px}
 input,textarea{display:block;width:100%;padding:12px 14px;color:var(--text);background:#08152e;border:1px solid #4b6287;border-radius:10px;font:inherit}
 textarea{resize:vertical;min-height:98px}input:focus,textarea:focus{outline:2px solid #8eb4f3;outline-offset:1px}
 button{border:0;border-radius:10px;background:#b5c9ff;color:#071834;padding:11px 16px;font-weight:760;font-size:13px;cursor:pointer}
-button.secondary{background:#354d76;color:#edf3ff}button:disabled{opacity:.42;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+button.secondary{background:#354d76;color:#edf3ff}button:disabled{opacity:.42;cursor:not-allowed}.blocked-help{display:none;margin:12px 0;padding:15px;border:1px solid #94724c;border-radius:12px;background:#35291f;color:#ffe4b3}.blocked-help.visible{display:block}.blocked-help strong{display:block;color:#ffe1a1}.blocked-help p{font-size:13px;margin:7px 0}.blocked-help .actions{margin:9px 0 0}.blocked-help button{background:#b6c9ff;color:#091b37}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
 small,.small{font-size:12px;color:var(--muted)}.status{min-height:32px;margin:12px 0;padding:10px 12px;background:#0b1b37;border:1px solid #374f72;border-radius:10px;overflow-wrap:anywhere}
 .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.kpi{border:1px solid #334b70;border-radius:10px;background:#0a1934;padding:12px;overflow-wrap:anywhere}
 .kpi small{display:block}.kpi b{display:block;font-size:16px;word-break:break-word}
@@ -65,7 +65,13 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
 <h3>Source-backed validation checklist</h3><div id="checks"></div>
 <p class="small">The token contract, amount, from/to addresses and exact calldata will be captured in the unsigned transaction only after you confirm. RPC gas and nonce may change before signing.</p>
 <div class="agree"><input type="checkbox" id="confirmed"><label for="confirmed" style="margin:0">I have checked the amount, recipient, sender, token and chain. I want only unsigned transaction data; I understand that no funds will be sent.</label></div>
-<div class="actions"><button id="prepare" disabled>Generate unsigned transaction</button></div>
+<div class="blocked-help" id="blockedHelp" role="status" aria-live="polite">
+ <strong id="blockedTitle">The payment cannot be prepared yet.</strong>
+ <p id="blockedExplanation">A positive token balance and enough PROS for gas must be verified before enabling the unsigned transaction button.</p>
+ <div class="actions"><button id="sampleFromBlocked" type="button">Use verified public sample and recheck</button></div>
+ <p class="small">The sample belongs to an unrelated public account. It lets you demonstrate unsigned calldata only; the app cannot sign or spend from that account.</p>
+ </div>
+ <div class="actions"><button id="prepare" disabled title="First complete an on-chain validation with enough token balance and gas">Generate unsigned transaction</button></div>
 <details><summary>Full on-chain review JSON</summary><pre id="fullReview">No reviewed data yet.</pre></details>
 </section>
 <section id="outputPanel" class="panel">
@@ -109,7 +115,7 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
  const payload=()=>({text:$('instruction').value.trim(),sender:$('sender').value.trim(),resolvedRecipient:$('recipient').value.trim()});
  function setStatus(message){$('message').textContent=message}
  function reset(){latestReview=null;latestPrepared=null;latestRaw=null;
-  $('reviewPanel').classList.remove('visible');$('outputPanel').classList.remove('visible');
+  $('reviewPanel').classList.remove('visible');$('outputPanel').classList.remove('visible');$('blockedHelp').classList.remove('visible');
   $('confirmed').checked=false;$('prepare').disabled=true;
  }
  async function post(url,body){
@@ -151,8 +157,23 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
     const content=document.createElement('span');content.textContent=' '+c.check.replaceAll('_',' ').toUpperCase()+' — '+c.detail;
     line.append(icon,content);checks.appendChild(line);
    });
-   setStatus(result.readyForSignature?'READY FOR YOUR REVIEW. Read the summary, check the box, then generate unsigned data.':
-    'VALIDATION BLOCKED. No unsigned transaction can be produced. Check token/gas balance and on-chain sources.');
+   $('blockedHelp').classList.toggle('visible',!result.readyForSignature);
+   if(!result.readyForSignature){
+    const failed=r.checks.filter(c=>!c.ok);
+    const balanceFailed=failed.some(c=>c.check==='sufficient_token_balance');
+    $('blockedTitle').textContent=balanceFailed?'Insufficient '+r.token+' balance: '+r.balance+' available; '+r.amount+' required.':
+     'This transaction is blocked by live on-chain validation.';
+    $('blockedExplanation').textContent=balanceFailed?
+      'The sending address needs at least '+r.amount+' '+r.token+
+      ' plus sufficient PROS for gas. Click the public example below to recheck a different address.':
+      failed.map(c=>c.check.replaceAll('_',' ')+': '+c.detail).join(' | ');
+    $('prepare').disabled=true;
+    $('prepare').title='Blocked: '+(balanceFailed?'insufficient token balance':'on-chain validation failed');
+   }else{
+    $('prepare').title='Check the confirmation box to generate unsigned transaction data';
+   }
+   setStatus(result.readyForSignature?'READY FOR YOUR REVIEW. Check the box to enable unsigned generation.':
+    'VALIDATION BLOCKED. '+(failedBalanceText(r.checks)||'Some required on-chain checks failed.')+' Use the public sample or a funded sender, then validate again.');
   }catch(e){setStatus('Live validation unavailable: '+String(e.message||e))}
   finally{$('review').disabled=false;}
  }
@@ -171,6 +192,10 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
   }catch(e){setStatus('Unsigned generation blocked: '+String(e.message||e));}
   finally{$('prepare').disabled=!latestReview?.readyForSignature||!$('confirmed').checked;}
  }
+ function failedBalanceText(checks){
+  const c=checks.find(x=>x.check==='sufficient_token_balance'&&!x.ok);
+  return c?'Insufficient token balance: '+c.detail:'';
+ }
  function exportJSON(){
   if(!latestPrepared)return;
   const blob=new Blob([JSON.stringify({schema:'pharos-natural-payment-user-export-v1',
@@ -181,13 +206,15 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
  }
  $('parse').onclick=parse;$('review').onclick=review;$('prepare').onclick=prepare;
- $('sample').onclick=()=>{
+ function loadSample(){
   $('instruction').value='send 100 USDC to 0x2222222222222222222222222222222222222222';
   $('sender').value='0x08cd62babd8Dac7404504792Df30C12fC5384Df5';
   $('recipient').value='';
   reset();setStatus('Public third-party funded address loaded. Reviewing actual current balances. No wallet control is implied.');
   review();
- };
+ }
+ $('sample').onclick=loadSample;
+ $('sampleFromBlocked').onclick=loadSample;
  $('confirmed').onchange=()=>{$('prepare').disabled=!latestReview?.readyForSignature||!$('confirmed').checked};
  $('copy').onclick=()=>{if(latestPrepared)navigator.clipboard.writeText(JSON.stringify(latestPrepared.unsignedTransaction,null,2)).catch(()=>{})};
  $('export').onclick=exportJSON;
