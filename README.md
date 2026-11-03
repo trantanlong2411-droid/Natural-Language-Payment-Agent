@@ -54,9 +54,17 @@ A real GitHub Actions Pharos RPC audit (chain 1672) verified Circle USDC at bloc
 
 The interactive dashboard now has **Load verified public example**, which fills that public sender and a sample 0x recipient, then asks the Worker to validate them afresh. The project does not control this EOA and cannot sign or send any payment from it. The observed balances are historical and can change at any time.
 
-## Cloudflare production deployment status
+## Cloudflare production deployment — verified live
 
-**Deployment requires verification before submission.** GitHub test/build passed, but the first live Worker integration received a **Cloudflare 404 HTML page** at the expected `/api/health` URL. The repository's [DEPLOYMENT.md](./DEPLOYMENT.md) documents Cloudflare **Settings → Builds** and the required repository/Worker name match. A successful unit or direct-RPC test does not imply the Cloudflare Worker is live. After Cloudflare deploy, rerun the CI live-worker test and ensure the `unsignedDraftReady` result is actually true before claiming a fully verified live transaction draft.
+**Live deployed Worker end-to-end verification passed on 3 November 2026.** GitHub Actions reached the public Cloudflare Worker, checked `/api/health`, tested the `alice.eth` follow-up, confirmed unfunded and unconfirmed payments are blocked, and successfully created and decoded **an unsigned 100-USDC transfer** from a public Pharos EOA, with no signing or broadcasting.
+
+- [Passing deployed-Worker GitHub Actions run](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41668698116)
+- [Permanent compact metadata of verified deployed run](./proof/verified-deployed-worker.json)
+- [Source-rich CI artifact](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41668698116) — `pharos-natural-language-payment-live-proof`
+- Pharos Mainnet block **22025409**, public sender `0x08cd62babd8Dac7404504792Df30C12fC5384Df5`, observed **1,239.162369 USDC**, estimated gas reserve **0.00070344 PROS**, status `UNSIGNED_READY_FOR_EXTERNAL_WALLET_REVIEW`.
+- This historical example belongs to a third party. The application **did not transfer any tokens**, has no private keys, and cannot sign on the account's behalf.
+
+The first live CI attempts had returned HTTP 404 while the Worker wasn't yet deployed; this was resolved and a successful deployed-Worker integration run is now archived. See [DEPLOYMENT.md](./DEPLOYMENT.md) for recovery steps only if a future redeploy fails.
 
 ## Reviewer walkthrough
 
