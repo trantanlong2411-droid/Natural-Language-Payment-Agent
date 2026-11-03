@@ -32,7 +32,7 @@ It received Cloudflare HTTP **404 (HTML)**, which means the expected Worker rout
   "transactionBroadcast": false
 }
 ```
-10. In [GitHub Actions](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml), choose **Run workflow** (or re-run failed jobs) to verify the Worker against real Pharos Mainnet.
+10. In [GitHub Actions — deployed Worker verification](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify-deployed.yml), choose **Run workflow** (or re-run failed jobs) to verify the Worker against real Pharos Mainnet.
 
 If your existing Worker's URL is not `natural-language-payment-agent.trantanlong2411.workers.dev`, set a GitHub Actions workflow environment variable `PAYMENT_AGENT_URL` to its actual base URL or update the script default. The live smoke test only uses a known URL; it never deploys the Worker itself.
 
