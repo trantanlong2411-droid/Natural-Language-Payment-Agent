@@ -51,3 +51,14 @@ test('prepare route blocks request without confirmation before any RPC access',a
  assert.equal(j.ok,false);
  assert.match(j.error,/confirmation/i);
 });
+
+test('review page explains locked button and offers a live-funded sample without bypassing validation',()=>{
+ assert.match(HTML,/id="blockedHelp"/);
+ assert.match(HTML,/Insufficient/);
+ assert.match(HTML,/id="sampleFromBlocked"/);
+ assert.match(HTML,/function loadSample\(\)/);
+ assert.match(HTML,/\$\('sampleFromBlocked'\)\.onclick=loadSample/);
+ assert.match(HTML,/\$\('prepare'\)\.disabled=true/);
+ assert.match(HTML,/\!latestReview\?\.readyForSignature\|\|\!\$\('confirmed'\)\.checked/);
+ assert.match(HTML,/The sample belongs to an unrelated public account/);
+});
