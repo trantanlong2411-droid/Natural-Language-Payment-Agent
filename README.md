@@ -48,6 +48,16 @@ All ERC20 contracts are rechecked via actual bytecode and symbol/decimals RPC ca
 
 USDC mainnet address: [official Circle announcement](https://www.circle.com/blog/now-available-usdc-cctp-on-pharos). Network: [Pharos documentation](https://docs.pharos.xyz/getting-started/network). Transfer calldata uses `transfer(address,uint256)` per [ERC-20](https://eips.ethereum.org/EIPS/eip-20). Chain RPC `https://rpc.pharos.xyz`, chain ID 1672.
 
+## Independent on-chain audit and sample
+
+A real GitHub Actions Pharos RPC audit (chain 1672) verified Circle USDC at block **22023746**, and discovered a public third-party externally-owned address with **1,940.189315 USDC** and **18.152564157241695028 PROS** at the time of the read. See [the permanent observation](./proof/public-funding-observation.json) and the [CI workflow](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml).
+
+The interactive dashboard now has **Load verified public example**, which fills that public sender and a sample 0x recipient, then asks the Worker to validate them afresh. The project does not control this EOA and cannot sign or send any payment from it. The observed balances are historical and can change at any time.
+
+## Cloudflare production deployment status
+
+**Deployment requires verification before submission.** GitHub test/build passed, but the first live Worker integration received a **Cloudflare 404 HTML page** at the expected `/api/health` URL. The repository's [DEPLOYMENT.md](./DEPLOYMENT.md) documents Cloudflare **Settings → Builds** and the required repository/Worker name match. A successful unit or direct-RPC test does not imply the Cloudflare Worker is live. After Cloudflare deploy, rerun the CI live-worker test and ensure the `unsignedDraftReady` result is actually true before claiming a fully verified live transaction draft.
+
 ## Reviewer walkthrough
 
 1. Go to [the Worker](https://natural-language-payment-agent.trantanlong2411.workers.dev/). With the prefilled `send 100 USDC to alice.eth`, click **Parse my instruction**. Check the recipient and sender clarification prompt.
