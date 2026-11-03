@@ -1,5 +1,24 @@
 # Natural-Language Payment Agent — reviewer evidence
 
+## Verified real Mainnet unsigned payment (3 November 2026)
+
+The independent direct-RPC GitHub Actions job successfully used the **live Pharos Pacific Mainnet** (chain ID 1672) to verify an actual public account's USDC and PROS balances, validate the official Circle USDC contract, read current gas and nonce, and generate an **unsigned 100 USDC ERC-20 transfer**. It decoded the resulting calldata and verified the recipient and amount without signing or broadcasting.
+
+- [Passing real-chain engine verification job](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41664769111/job/126017017877)
+- [Permanent compact verified-run metadata](./verified-engine-mainnet.json)
+- Full GitHub Actions artifact: `pharos-natural-payment-mainnet-rpc-audit` (30-day retention)
+- Block: **22023943**; public sample sender: `0x086eb9C2B14dD657ae77D07dF9115A2F946CE327`.
+- On-chain USDC balance observed: **1,340,000 USDC**, native **17.763802498851399873 PROS**.
+- Instruction: `send 100 USDC to 0x2222222222222222222222222222222222222222`.
+- Gas reserve estimate: **0.00070344 PROS**.
+- ERC-20 transfer selector: `0xa9059cbb`; transfer amount: **100000000 base units**.
+- `signingPerformed: false`, `transactionBroadcast: false`; no tx hash exists.
+
+**Do not claim this sender is the user's wallet or that funds were sent.** It is a public third-party account, used strictly to demonstrate the unsigned transaction builder against **real RPC balances**, with no private keys. The observed amounts are historical and may change.
+
+**Cloudflare deployment remains separately unverified.** The initial live deployed-Worker integration received an HTTP 404 from the expected workers.dev URL. The independent real-chain engine proof does not demonstrate a reachable website. See [DEPLOYMENT.md](../DEPLOYMENT.md). Once Cloudflare build integration is correctly connected, rerun the deployed live workflow before submission.
+
+
 This is the permanent proof index for the Pharos Medium / Payments task. Review the live application, source, CI and original machine-readable artifact (saved by GitHub Actions, retained for 30 days).
 
 - [Public app](https://natural-language-payment-agent.trantanlong2411.workers.dev/)
