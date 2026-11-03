@@ -95,6 +95,6 @@ npm run build
 npx wrangler deploy
 ```
 
-CI: [GitHub Actions](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml)
+CI: [Unit/build + direct Mainnet engine verification](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml) · [Separate post-deployment Worker validation](https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify-deployed.yml)
 
 Raw verification script: `scripts/smoke-deployed.mjs`; source: `src/parser.mjs`, `src/engine.mjs`, `src/worker.mjs`.
