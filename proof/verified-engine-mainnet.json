@@ -1,0 +1,49 @@
+{
+  "schema": "pharos-natural-payment-verified-engine-v1",
+  "verifiedAtUtc": "2026-11-03T15:31:52.263Z",
+  "githubActionRun": "https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41664769111",
+  "githubJob": "https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41664769111/job/126017017877",
+  "network": "Pharos Pacific Mainnet",
+  "chainId": 1672,
+  "source": "Actual Pharos JSON-RPC read-only contract, balance and gas calls inside GitHub Actions",
+  "usdcContract": "0xC879C018dB60520F4355C26eD1a6D572cdAC1815",
+  "verifiedOnchain": {
+    "block": "22023943",
+    "sender": "0x086eb9C2B14dD657ae77D07dF9115A2F946CE327",
+    "publicThirdParty": true,
+    "ownedByUser": false,
+    "ownedByProject": false,
+    "usdcBalance": "1340000.0",
+    "prosBalance": "17.763802498851399873",
+    "recipient": "0x2222222222222222222222222222222222222222",
+    "amount": "100",
+    "symbol": "USDC",
+    "amountBaseUnits": "100000000",
+    "gasReservePros": "0.00070344",
+    "encodedFunctionSelector": "0xa9059cbb"
+  },
+  "result": {
+    "parsed": true,
+    "onchainTokenVerified": true,
+    "onchainBalanceVerified": true,
+    "onchainGasEstimated": true,
+    "humanReadableSummaryGenerated": true,
+    "unsignedTxGenerated": true,
+    "signatureGenerated": false,
+    "transactionBroadcast": false,
+    "txHash": null,
+    "walletSigningRequested": false
+  },
+  "workerDeployment": {
+    "status": "NOT_YET_VERIFIED",
+    "reportedError": "Expected worker workers.dev endpoint HTTP 404",
+    "note": "The successful direct RPC engine test does not establish that the deployed Cloudflare Worker is reachable."
+  },
+  "limitations": [
+    "Sender is a public third-party EOA and the project cannot sign for it.",
+    "Recipient is a harmless syntactically valid demonstration address; no actual payment took place.",
+    "RPC values are historical and can change before any future signature.",
+    "Raw JSON artifact is in successful direct-RPC GitHub Action job, with 30-day retention.",
+    "This compact summary was copied from verified CI logs, not cryptographic attestation."
+  ]
+}
