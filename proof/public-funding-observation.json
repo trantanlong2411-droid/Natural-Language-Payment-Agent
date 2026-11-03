@@ -1,0 +1,27 @@
+{
+  "schema": "pharos-natural-payment-sample-observation-v1",
+  "observedAtUtc": "2026-11-03T15:28:23.848Z",
+  "verificationRun": "https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41664171446",
+  "source": "real Pharos Mainnet JSON-RPC read-only queries from GitHub Actions",
+  "chainId": 1672,
+  "block": "22023746",
+  "token": {
+    "symbol": "USDC",
+    "contract": "0xC879C018dB60520F4355C26eD1a6D572cdAC1815",
+    "decimals": 6,
+    "verifiedOnchainBytecode": true
+  },
+  "publicSample": {
+    "address": "0x08cd62babd8Dac7404504792Df30C12fC5384Df5",
+    "usdcBalance": "1940.189315",
+    "nativeBalancePros": "18.152564157241695028",
+    "foundViaERC20Transfer": "0x0ee5122e875280b08852ea22224c5f79df41adbccbfbbc6ed21e405b9bfd229a",
+    "verifiedEOA": true,
+    "userOwnsAccount": false,
+    "projectControlsAccount": false
+  },
+  "unsignedDraftCreated": false,
+  "tokenTransferSent": false,
+  "privateKeysAccessed": false,
+  "warning": "Historical funds observed on public third-party account; it may change later. This evidence does not demonstrate a successful deployed Worker unsigned transaction flow."
+}
