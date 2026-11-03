@@ -19,6 +19,25 @@ jobs:
         run: npm test
       - name: Bundle Cloudflare Worker
         run: npm run build
+  live-usdc-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Verify Circle USDC directly against Pharos RPC and discover public sender
+        run: node scripts/check-pharos-rpc.mjs
+      - name: Archive independent mainnet contract evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pharos-natural-payment-mainnet-rpc-audit
+          path: proof/live-rpc-contract-audit.json
+          retention-days: 30
+          if-no-files-found: error
   live-pharos-unsigned-check:
     runs-on: ubuntu-latest
     timeout-minutes: 14
