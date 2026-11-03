@@ -1,5 +1,7 @@
 name: Pharos Natural Payment Agent — deployed Worker end-to-end verification
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
