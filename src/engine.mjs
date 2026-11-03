@@ -2,7 +2,7 @@ import {Interface,parseUnits,formatUnits,keccak256,toUtf8Bytes} from 'ethers';
 import {parsePayment,TOKENS} from './parser.mjs';
 
 export const CHAIN={id:1672,name:'Pharos Pacific Mainnet',rpc:'https://rpc.pharos.xyz',
- explorer:'https://pharosscan.xyz',native:'PROS'};
+ explorer:'https://pharosscan.xyz',native:'PROS',usdc:TOKENS.USDC.contract};
 export const ERC20=new Interface([
  'function balanceOf(address) view returns(uint256)',
  'function decimals() view returns(uint8)',
