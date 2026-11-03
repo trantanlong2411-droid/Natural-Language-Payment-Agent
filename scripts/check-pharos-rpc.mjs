@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import {Interface,id,getAddress,formatUnits} from 'ethers';
+import {Interface,id,getAddress,formatUnits,parseUnits} from 'ethers';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {CHAIN,ERC20} from '../src/engine.mjs';
+import {CHAIN,ERC20,reviewPayment,prepareUnsigned} from '../src/engine.mjs';
 let requestId=0;
 const rpc=async(method,params=[])=>{
  const res=await fetch(CHAIN.rpc,{method:'POST',headers:{'content-type':'application/json'},
@@ -61,9 +61,47 @@ outer:for(let i=0;i<18;i++){
   }catch(e){report.scan.errors.push(String(e.message||e).slice(0,95))}
  }
 }
+if(report.candidate){
+ const intent={text:'send 100 USDC to 0x2222222222222222222222222222222222222222',
+  sender:report.candidate.address};
+ const actual=await reviewPayment(rpc,intent);
+ report.positiveLiveReview={
+  status:actual.review?.status||'NO_REVIEW',ready:actual.readyForSignature===true,
+  reviewId:actual.reviewId,summary:actual.review?.summary||null,
+  checks:actual.review?.checks||[],sourceBlock:actual.review?.block||null
+ };
+ if(!actual.readyForSignature){
+  report.positiveDraftError='Public sender has USDC/PROS, but transfer preflight did not pass. No draft fabricated.';
+  console.log('READ_ONLY_DRAFT_BLOCKED',JSON.stringify(report.positiveLiveReview));
+ }else{
+  const output=await prepareUnsigned(rpc,{...intent,reviewId:actual.reviewId,confirmed:true});
+  assert.equal(output.ok,true,'Expected positive unsigned transaction result');
+  assert.equal(output.signingPerformed,false);
+  assert.equal(output.transactionBroadcast,false);
+  const tx=output.unsignedTransaction;
+  assert.equal(tx.chainId,'0x688');
+  assert.equal(tx.from.toLowerCase(),report.candidate.address.toLowerCase());
+  assert.equal(tx.to.toLowerCase(),CHAIN.usdc.toLowerCase());
+  assert.equal(tx.value,'0x0');
+  assert.ok(tx.gas&&tx.gasPrice&&tx.nonce);
+  const [dest,amount]=ERC20.decodeFunctionData('transfer',tx.data);
+  assert.equal(dest,'0x2222222222222222222222222222222222222222');
+  assert.equal(amount,parseUnits('100',6));
+  assert.ok(!('signature' in tx||'hash' in tx));
+  report.positiveLiveUnsigned={transaction:tx,review:output.review,
+   actionPattern:output.actionPattern,signingPerformed:false,transactionBroadcast:false,
+   projectControlsSender:false};
+  console.log('LIVE_MAINNET_POSITIVE_UNSIGNED_DRAFT_VERIFIED',JSON.stringify({
+   sender:report.candidate.address,block:output.review.block,token:'USDC',amount:'100',
+   onchainBalance:output.review.balance,gasReserve:output.review.gasReservePROS,
+   recipient:dest,selector:tx.data.slice(0,10),
+   signed:false,broadcast:false,rawProof:'proof/live-rpc-contract-audit.json'
+  }));
+ }
+}
 await mkdir('proof',{recursive:true});
 await writeFile('proof/live-rpc-contract-audit.json',JSON.stringify(report,null,2)+'\n');
 console.log('MAINNET_RPC_AUDIT_SUCCESS',JSON.stringify({
  chainId:1672,contract:CHAIN.usdc,block:tip.toString(),
- sampleEOAFound:Boolean(report.candidate),candidate:report.candidate,
+ sampleEOAFound:Boolean(report.candidate),candidate:report.candidate,positiveUnsignedVerified:Boolean(report.positiveLiveUnsigned),
  windows:report.scan.windows,checked:report.scan.candidatesChecked,output:'proof/live-rpc-contract-audit.json'}));
