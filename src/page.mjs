@@ -50,7 +50,7 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
 <input id="recipient" placeholder="0x... (resolve alice.eth manually)" spellcheck="false">
 <div class="actions"><button id="parse">Parse my instruction</button><button id="review" class="secondary">Validate on Pharos Mainnet</button><button id="sample" class="secondary">Load verified public example</button></div>
 <p id="message" class="status" role="status">Start by parsing a payment. You can complete an unresolved recipient or sender after the agent asks.</p>
-<p class="small">Public demo sender (verified 2026-11-03 at Pharos block 22023943): <code>0x086eb9C2B14dD657ae77D07dF9115A2F946CE327</code>, previously holding 1,340,000 USDC and 17.7638 PROS. This third-party wallet is NOT yours and cannot be signed for by this app. Balances are checked again live.</p>
+<p class="small">Public demo sender (reverified 2026-11-03 at Pharos block 22025409): <code>0x08cd62babd8Dac7404504792Df30C12fC5384Df5</code>, holding 1,239.162369 USDC with sufficient gas at the recorded block. This third-party wallet is NOT yours and cannot be signed for by this app. Balances are checked again live.</p>
 <details><summary>Parsed intent or missing fields</summary><pre id="parsed">No input parsed yet.</pre></details>
 </section>
 <section id="reviewPanel" class="panel">
@@ -183,7 +183,7 @@ details{margin-top:15px}summary{cursor:pointer;color:var(--accent)}footer{font-s
  $('parse').onclick=parse;$('review').onclick=review;$('prepare').onclick=prepare;
  $('sample').onclick=()=>{
   $('instruction').value='send 100 USDC to 0x2222222222222222222222222222222222222222';
-  $('sender').value='0x086eb9C2B14dD657ae77D07dF9115A2F946CE327';
+  $('sender').value='0x08cd62babd8Dac7404504792Df30C12fC5384Df5';
   $('recipient').value='';
   reset();setStatus('Public third-party funded address loaded. Reviewing actual current balances. No wallet control is implied.');
   review();
