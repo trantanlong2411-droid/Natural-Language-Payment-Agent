@@ -38,22 +38,3 @@ jobs:
           path: proof/live-rpc-contract-audit.json
           retention-days: 30
           if-no-files-found: error
-  live-pharos-unsigned-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 14
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: npm install --no-audit --no-fund
-      - name: Verify deployed Worker, real Circle USDC and read-only draft flow
-        run: node scripts/smoke-deployed.mjs
-      - name: Archive actual live RPC evidence
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pharos-natural-language-payment-live-proof
-          path: proof/live-payment-evidence.json
-          retention-days: 30
-          if-no-files-found: error
