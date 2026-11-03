@@ -41,6 +41,15 @@ a.cta{display:inline-block;background:#b1c7ff;border-radius:9px;padding:11px 19p
 <p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/blob/main/proof/public-funding-observation.json" target="_blank" rel="noopener noreferrer">Machine-readable historical observation ↗</a></p>
 <p class="small">This is a public third-party EOA that the project does not control. The balance can change. A balance observation is <em>not</em> evidence of a signed payment or of a successful live deployed-Worker unsigned draft. The application's <strong>Load verified public example</strong> button rechecks the current balances when the Worker is available.</p>
 </section>
+<section class="panel"><h2>Real Mainnet 100-USDC unsigned preparation — verified</h2>
+<p>A separate GitHub Actions job executed the actual payment engine against Pharos Mainnet RPC at block <strong>22023943</strong>, validated the official USDC contract and enough USDC/PROS held by a public third-party account, then produced and decoded the transaction calldata. <strong>No signing or broadcasting took place.</strong></p>
+<div class="grid">
+<div class="card"><strong>VERIFIED TRANSFER DRAFT</strong><h3>100 USDC · 0xa9059cbb</h3><p>Recipient <code>0x2222222222222222222222222222222222222222</code></p></div>
+<div class="card"><strong>REAL ON-CHAIN PRECHECK</strong><h3>Block 22023943</h3><p>Public third-party sender held 1,340,000 USDC with estimated gas reserve 0.00070344 PROS at that time.</p></div>
+</div>
+<p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/runs/41664769111/job/126017017877" target="_blank" rel="noopener noreferrer">Actual RPC engine verification log ↗</a> · <a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/blob/main/proof/verified-engine-mainnet.json" target="_blank" rel="noopener noreferrer">Compact proof JSON ↗</a></p>
+<p class="small">The user and project do not control this public sender; prepared JSON is not a signed transaction or authorization. The initial expected Cloudflare workers.dev URL returned 404; this direct RPC proof alone does not establish website deployment.</p>
+</section>
 <section class="panel"><h2>03 / Live and reproducible proof</h2>
 <p>Automated tests verify parser ambiguity, address/token validation, balance and gas failures, review gating and the exact unsigned transaction structure. The deployed live GitHub Actions workflow checks actual Pharos RPC connectivity and USDC contract metadata using the published Cloudflare Worker.</p>
 <p><a href="https://github.com/trantanlong2411-droid/Natural-Language-Payment-Agent/actions/workflows/verify.yml" target="_blank" rel="noopener noreferrer">GitHub Actions verification →</a></p>
